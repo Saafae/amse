@@ -1,12 +1,11 @@
 import 'dart:io';
 
 void main() {
-  stdout.write("Entrez un nombre: ");
-  int number = int.parse(stdin.readLineSync()!);
+  List a = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
 
-  if (number % 2 == 0) {
-    print("Pair");
-  } else {
-    print("Impair");
+  for (int i = 0; i < a.length; i++) {
+    if (a[i] < 5) {
+      print(a[i]);
+    }
   }
 }
