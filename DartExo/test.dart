@@ -1,11 +1,13 @@
 import 'dart:io';
 
 void main() {
-  List a = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
+  stdout.write("Entrez un nombre: ");
 
-  for (int i = 0; i < a.length; i++) {
-    if (a[i] < 5) {
-      print(a[i]);
+  int num = int.parse(stdin.readLineSync()!);
+  print('La liste des diviseurs: ');
+  for (int i = 1; i <= num; i++) {
+    if (num % i == 0) {
+      print(i);
     }
   }
 }
