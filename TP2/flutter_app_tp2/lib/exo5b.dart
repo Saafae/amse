@@ -27,7 +27,7 @@ class DisplayGridWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Display a Tile as a Cropped Image'),
+          title: const Text('Grid Cropped Image'),
           centerTitle: true,
         ),
         body: GridView.count(
