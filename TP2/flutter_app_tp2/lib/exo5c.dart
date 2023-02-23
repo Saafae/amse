@@ -73,8 +73,8 @@ class _DisplayGridWidgetState extends State<DisplayGridWidget> {
     return GridView.count(
       primary: false,
       padding: const EdgeInsets.all(20),
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 10,
+      crossAxisSpacing: 3,
+      mainAxisSpacing: 3,
       crossAxisCount: currentValue,
       children: List.generate(
         currentValue * currentValue,
