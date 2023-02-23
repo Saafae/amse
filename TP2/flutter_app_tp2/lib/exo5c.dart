@@ -48,7 +48,7 @@ class _DisplayGridWidgetState extends State<DisplayGridWidget> {
             children: <Widget>[
               const Text('Size:'),
               SizedBox(
-                width: 300, // définir la largeur souhaitée pour le slider
+                width: 300,
                 child: Slider(
                   value: _currentValue,
                   min: 1,
