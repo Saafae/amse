@@ -72,27 +72,250 @@ class _DisplayImageWidgetState extends State<DisplayImageWidget> {
           ),
           body: TabBarView(
             children: <Widget>[
-              Swiper(
-                itemBuilder: (BuildContext context, int index) {
-                  return Image.network(
-                    "https://picsum.photos/512/1024",
-                    fit: BoxFit.fill,
-                  );
-                },
-                itemCount: 3,
-                pagination: const SwiperPagination(),
-                control: const SwiperControl(),
+              Container(
+                margin: const EdgeInsets.only(top: 20.0),
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: loadMedia('movies'),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<Map<String, dynamic>>? movies = snapshot.data;
+                      return Swiper(
+                        itemBuilder: (BuildContext context, int index) {
+                          return CustomScrollView(
+                            slivers: <Widget>[
+                              SliverList(
+                                delegate: SliverChildListDelegate(
+                                  [
+                                    SizedBox(
+                                      height: 500.0,
+                                      width: double.infinity,
+                                      child: Stack(
+                                        children: <Widget>[
+                                          Image.asset(
+                                            "assets/${movies[index]['name']}.jpg",
+                                            height: 500,
+                                            width: double.infinity,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          Positioned(
+                                            bottom: 16,
+                                            right: 16,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                // FAVORIS
+                                              },
+                                              child: Icon(
+                                                movies[index]['favorite']
+                                                    ? Icons.favorite
+                                                    : Icons.favorite_border,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          const SizedBox(width: 8.0),
+                                          Text(
+                                            movies[index]['name'],
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20.0,
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                  'Director: ${movies[index]['director']}'),
+                                              const SizedBox(width: 3.0),
+                                              Container(
+                                                width: 1.0,
+                                                height: 40.0,
+                                                color: Colors.grey[300],
+                                                margin: const EdgeInsets.only(
+                                                    left: 10.0, right: 10.0),
+                                              ),
+                                              const Icon(
+                                                Icons.star,
+                                                color: Colors.yellow,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 3.0),
+                                              Text(
+                                                  '${movies[index]['rating']}'),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 3.0),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20.0),
+                                                color: const Color.fromARGB(
+                                                    255, 255, 143, 0)),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16.0,
+                                                vertical: 8.0),
+                                            child: Text(
+                                              '${movies[index]['category']}',
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8.0),
+                                          Text(
+                                              '${movies[index]['description']}',
+                                              textAlign: TextAlign.justify),
+                                          const SizedBox(height: 3.0),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                        itemCount: movies!.length,
+                        viewportFraction: 0.8,
+                        scale: 0.9,
+                      );
+                    } else {
+                      return const Center(
+                        child: Text("No data !!"),
+                      );
+                    }
+                  },
+                ),
               ),
-              Swiper(
-                itemBuilder: (BuildContext context, int index) {
-                  return Image.network(
-                    "https://picsum.photos/512/1024",
-                    fit: BoxFit.fill,
-                  );
-                },
-                itemCount: 3,
-                pagination: const SwiperPagination(),
-                control: const SwiperControl(),
+              Container(
+                margin: const EdgeInsets.only(top: 20.0),
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: loadMedia('series'),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<Map<String, dynamic>>? series = snapshot.data;
+
+                      return Swiper(
+                        itemBuilder: (BuildContext context, int index) {
+                          return CustomScrollView(
+                            slivers: <Widget>[
+                              SliverList(
+                                delegate: SliverChildListDelegate(
+                                  [
+                                    SizedBox(
+                                      height: 500.0,
+                                      width: double.infinity,
+                                      child: Stack(
+                                        children: <Widget>[
+                                          Image.asset(
+                                            "assets/${series[index]['name']}.jpg",
+                                            height: 500,
+                                            width: double.infinity,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          Positioned(
+                                            bottom: 16,
+                                            right: 16,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                //FAVORIS
+                                              },
+                                              child: Icon(
+                                                series[index]['favorite']
+                                                    ? Icons.favorite
+                                                    : Icons.favorite_border,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          const SizedBox(width: 8.0),
+                                          Text(
+                                            series[index]['name'],
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20.0,
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                  'Director: ${series[index]['director']}'),
+                                              const SizedBox(width: 3.0),
+                                              Container(
+                                                width: 1.0,
+                                                height: 40.0,
+                                                color: Colors.grey[300],
+                                                margin: const EdgeInsets.only(
+                                                    left: 10.0, right: 10.0),
+                                              ),
+                                              const Icon(
+                                                Icons.star,
+                                                color: Colors.yellow,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 3.0),
+                                              Text(
+                                                  '${series[index]['rating']}'),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 3.0),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20.0),
+                                                color: const Color.fromARGB(
+                                                    255, 255, 143, 0)),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16.0,
+                                                vertical: 8.0),
+                                            child: Text(
+                                              '${series[index]['category']}',
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8.0),
+                                          Text(
+                                              '${series[index]['description']}',
+                                              textAlign: TextAlign.justify),
+                                          const SizedBox(height: 3.0),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                        itemCount: series!.length,
+                        viewportFraction: 0.8,
+                        scale: 0.9,
+                      );
+                    } else {
+                      return const Center(
+                        child: Text("No data !!"),
+                      );
+                    }
+                  },
+                ),
               ),
             ],
           ),
