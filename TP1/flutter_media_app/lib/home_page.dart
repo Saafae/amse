@@ -1,44 +1,20 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:provider/provider.dart';
+import 'main.dart';
 
-class DisplayImageWidget extends StatefulWidget {
-  const DisplayImageWidget({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
   @override
-  State<DisplayImageWidget> createState() => _DisplayImageWidgetState();
+  State<HomePage> createState() => _HomePage();
 }
 
-Future<List<Map<String, dynamic>>> loadMedia(String collection) async {
-  List<Map<String, dynamic>> data = [];
-  if (collection == 'favorites') {
-    var allMoviesFavorites = FirebaseFirestore.instance
-        .collection('movies')
-        .where("favorite", isEqualTo: true);
-    var allSeriesFavorites = FirebaseFirestore.instance
-        .collection('series')
-        .where("favorite", isEqualTo: true);
-    var querySnapshotMovies = await allMoviesFavorites.get();
-    var querySnapshotSeries = await allSeriesFavorites.get();
-    for (var doc in querySnapshotMovies.docs) {
-      data.add(doc.data());
-    }
-    for (var doc in querySnapshotSeries.docs) {
-      data.add(doc.data());
-    }
-    return data;
-  } else {
-    var allCollection = FirebaseFirestore.instance.collection(collection);
-    var querySnapshot = await allCollection.get();
-    for (var doc in querySnapshot.docs) {
-      data.add(doc.data());
-    }
-    return data;
-  }
-}
-
-class _DisplayImageWidgetState extends State<DisplayImageWidget> {
+class _HomePage extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => appState.allFavorites());
     return DefaultTabController(
         initialIndex: 0,
         length: 2,
@@ -102,7 +78,17 @@ class _DisplayImageWidgetState extends State<DisplayImageWidget> {
                                             right: 16,
                                             child: ElevatedButton(
                                               onPressed: () {
-                                                // FAVORIS
+                                                if (!appState.favoriteMoviesIds
+                                                    .contains(index)) {
+                                                  print(
+                                                      '${appState.favoriteMoviesIds} $index');
+                                                  appState.addFavorite(
+                                                      'movies', index);
+                                                } else {
+                                                  print("hello");
+                                                  appState.removeFavorite(
+                                                      'movies', index);
+                                                }
                                               },
                                               child: Icon(
                                                 movies[index]['favorite']
@@ -157,7 +143,7 @@ class _DisplayImageWidgetState extends State<DisplayImageWidget> {
                                                 borderRadius:
                                                     BorderRadius.circular(20.0),
                                                 color: const Color.fromARGB(
-                                                    255, 255, 143, 0)),
+                                                    173, 203, 47, 12)),
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 16.0,
                                                 vertical: 8.0),
@@ -225,7 +211,14 @@ class _DisplayImageWidgetState extends State<DisplayImageWidget> {
                                             right: 16,
                                             child: ElevatedButton(
                                               onPressed: () {
-                                                //FAVORIS
+                                                if (!appState.favoriteSeriesIds
+                                                    .contains(index)) {
+                                                  appState.addFavorite(
+                                                      'series', index);
+                                                } else {
+                                                  appState.removeFavorite(
+                                                      'series', index);
+                                                }
                                               },
                                               child: Icon(
                                                 series[index]['favorite']
@@ -280,7 +273,7 @@ class _DisplayImageWidgetState extends State<DisplayImageWidget> {
                                                 borderRadius:
                                                     BorderRadius.circular(20.0),
                                                 color: const Color.fromARGB(
-                                                    255, 255, 143, 0)),
+                                                    173, 203, 47, 12)),
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 16.0,
                                                 vertical: 8.0),

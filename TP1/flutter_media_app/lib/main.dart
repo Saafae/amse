@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'homepage.dart' as home;
-import 'filterPage.dart' as filter;
-import 'favoritePage.dart' as favorite;
+import 'home_page.dart' as home;
+import 'filter_page.dart' as filter;
+import 'favorite_page.dart' as favorite;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +34,97 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  //var current = WordPair.random();
+  var favoriteMoviesIds = [];
+  var favoriteSeriesIds = [];
+  TextEditingController textController = TextEditingController();
+
+  Future<List> allFavorites() async {
+    favoriteMoviesIds = [];
+    favoriteSeriesIds = [];
+
+    await FirebaseFirestore.instance
+        .collection("movies")
+        .where("favorite", isEqualTo: true)
+        .get()
+        .then((querySnapshot) {
+      for (var doc in querySnapshot.docs) {
+        favoriteMoviesIds.add(int.parse(doc.id));
+      }
+    });
+    await FirebaseFirestore.instance
+        .collection("series")
+        .where("favorite", isEqualTo: true)
+        .get()
+        .then((querySnapshot) {
+      for (var doc in querySnapshot.docs) {
+        favoriteSeriesIds.add(int.parse(doc.id));
+      }
+    });
+    return [favoriteMoviesIds, favoriteSeriesIds];
+  }
+
+  void addFavorite(String collection, int index) async {
+    try {
+      FirebaseFirestore.instance
+          .collection(collection)
+          .doc('$index')
+          .set({"favorite": true}, SetOptions(merge: true));
+      if (collection == "movies") {
+        favoriteMoviesIds.add(index);
+      } else if (collection == "series") {
+        favoriteSeriesIds.add(index);
+      }
+      notifyListeners();
+    } on Exception catch (e) {
+      print("$e");
+    }
+  }
+
+  void removeFavorite(String collection, int index) async {
+    try {
+      print('$favoriteMoviesIds   delete');
+      FirebaseFirestore.instance
+          .collection(collection)
+          .doc('$index')
+          .set({"favorite": false}, SetOptions(merge: true));
+      if (collection == "movies") {
+        favoriteMoviesIds.remove(index);
+      } else if (collection == "series") {
+        favoriteSeriesIds.remove(index);
+      }
+      notifyListeners();
+    } on Exception catch (e) {
+      print("$e");
+    }
+  }
+}
+
+Future<List<Map<String, dynamic>>> loadMedia(String collection) async {
+  List<Map<String, dynamic>> data = [];
+  if (collection == 'favorites') {
+    var allMoviesFavorites = FirebaseFirestore.instance
+        .collection('movies')
+        .where("favorite", isEqualTo: true);
+    var allSeriesFavorites = FirebaseFirestore.instance
+        .collection('series')
+        .where("favorite", isEqualTo: true);
+    var querySnapshotMovies = await allMoviesFavorites.get();
+    var querySnapshotSeries = await allSeriesFavorites.get();
+    for (var doc in querySnapshotMovies.docs) {
+      data.add(doc.data());
+    }
+    for (var doc in querySnapshotSeries.docs) {
+      data.add(doc.data());
+    }
+    return data;
+  } else {
+    var allCollection = FirebaseFirestore.instance.collection(collection);
+    var querySnapshot = await allCollection.get();
+    for (var doc in querySnapshot.docs) {
+      data.add(doc.data());
+    }
+    return data;
+  }
 }
 
 class Page {
@@ -42,9 +133,9 @@ class Page {
 }
 
 List pages = [
-  const Page(build: home.DisplayImageWidget()),
-  const Page(build: filter.PositionedTiles()),
-  const Page(build: favorite.PositionedTiles()),
+  const Page(build: home.HomePage()),
+  const Page(build: filter.FilterPage()),
+  const Page(build: favorite.FavoritePage()),
 ];
 
 class MenuPage extends StatefulWidget {
@@ -110,7 +201,7 @@ class _MenuPageState extends State<MenuPage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: const Color.fromRGBO(176, 47, 0, 1),
         onTap: _onItemTapped,
       ),
     );
