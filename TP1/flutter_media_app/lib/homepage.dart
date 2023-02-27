@@ -1,75 +1,74 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
-// ==============
-// Models
-// ==============
+import 'package:card_swiper/card_swiper.dart';
 
-math.Random random = math.Random();
-
-class Tile {
-  Color? color;
-
-  Tile(this.color);
-  Tile.randomColor() {
-    color = Color.fromARGB(
-        255, random.nextInt(255), random.nextInt(255), random.nextInt(255));
-  }
-}
-
-// ==============
-// Widgets
-// ==============
-
-class TileWidget extends StatelessWidget {
-  final Tile tile;
-
-  const TileWidget(this.tile, {super.key});
+class DisplayImageWidget extends StatefulWidget {
+  const DisplayImageWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return coloredBox();
-  }
+  State<DisplayImageWidget> createState() => _DisplayImageWidgetState();
+}
 
-  Widget coloredBox() {
-    return Container(
-        color: tile.color,
-        child: const Padding(
-          padding: EdgeInsets.all(70.0),
+class _DisplayImageWidgetState extends State<DisplayImageWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+        initialIndex: 0,
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Home'),
+            bottom: TabBar(
+              tabs: <Widget>[
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const <Widget>[
+                      Icon(Icons.local_movies),
+                      SizedBox(width: 8.0),
+                      Text('Movies'),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const <Widget>[
+                      Icon(Icons.tv),
+                      SizedBox(width: 8.0),
+                      Text('Series'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: <Widget>[
+              Swiper(
+                itemBuilder: (BuildContext context, int index) {
+                  return Image.network(
+                    "https://via.placeholder.com/350x150",
+                    fit: BoxFit.fill,
+                  );
+                },
+                itemCount: 3,
+                pagination: const SwiperPagination(),
+                control: const SwiperControl(),
+              ),
+              Swiper(
+                itemBuilder: (BuildContext context, int index) {
+                  return Image.network(
+                    "https://via.placeholder.com/350x150",
+                    fit: BoxFit.fill,
+                  );
+                },
+                itemCount: 3,
+                pagination: const SwiperPagination(),
+                control: const SwiperControl(),
+              ),
+            ],
+          ),
         ));
-  }
-}
-
-void main() => runApp(const MaterialApp(home: PositionedTiles()));
-
-class PositionedTiles extends StatefulWidget {
-  const PositionedTiles({super.key});
-
-  @override
-  State<StatefulWidget> createState() => PositionedTilesState();
-}
-
-class PositionedTilesState extends State<PositionedTiles> {
-  List<Widget> tiles =
-      List<Widget>.generate(2, (index) => TileWidget(Tile.randomColor()));
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Moving Tiles'),
-        centerTitle: true,
-      ),
-      body: Row(children: tiles),
-      floatingActionButton: FloatingActionButton(
-          onPressed: swapTiles,
-          child: const Icon(Icons.sentiment_very_satisfied)),
-    );
-  }
-
-  swapTiles() {
-    setState(() {
-      tiles.insert(1, tiles.removeAt(0));
-    });
   }
 }

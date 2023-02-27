@@ -15,12 +15,12 @@ class MyApp extends StatelessWidget {
 }
 
 class Page {
-  final Widget build;
-  const Page({required this.build});
+  final Widget? build;
+  const Page({this.build});
 }
 
 List pages = [
-  const Page(build: home.PositionedTiles()),
+  const Page(build: home.DisplayImageWidget()),
   const Page(build: filter.PositionedTiles()),
   const Page(build: favorite.PositionedTiles()),
 ];
