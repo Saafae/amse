@@ -1,65 +1,95 @@
 import 'package:flutter/material.dart';
+import 'homepage.dart' as home;
+import 'filterPage.dart' as filter;
+import 'favoritePage.dart' as favorite;
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    return const MaterialApp(home: MenuPage());
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
+class Page {
+  final Widget build;
+  const Page({required this.build});
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+List pages = [
+  const Page(build: home.PositionedTiles()),
+  const Page(build: filter.PositionedTiles()),
+  const Page(build: favorite.PositionedTiles()),
+];
 
-  void _incrementCounter() {
+class MenuPage extends StatefulWidget {
+  const MenuPage({super.key});
+
+  @override
+  State<MenuPage> createState() => _MenuPageState();
+}
+
+class _MenuPageState extends State<MenuPage> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
     setState(() {
-      _counter++;
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    var page = pages[_selectedIndex];
+
+    switch (_selectedIndex) {
+      case 0:
+        page = page.build;
+        print("$_selectedIndex ");
+        break;
+      case 1:
+        page = page.build;
+        print("$_selectedIndex ");
+        break;
+      case 2:
+        page = page.build;
+        break;
+      default:
+        throw UnimplementedError('no widget for $_selectedIndex');
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: _selectedIndex == 0
+          ? null
+          : AppBar(
+              title: _selectedIndex == 1
+                  ? const Text('Filter')
+                  : const Text('Favorites'),
+            ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+        child: page,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.filter_list),
+            label: 'Filter',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Favorites',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
     );
   }
