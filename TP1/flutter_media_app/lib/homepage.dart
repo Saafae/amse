@@ -32,7 +32,6 @@ Future<List<Map<String, dynamic>>> loadMedia(String collection) async {
     for (var doc in querySnapshot.docs) {
       data.add(doc.data());
     }
-    print("$data");
     return data;
   }
 }
