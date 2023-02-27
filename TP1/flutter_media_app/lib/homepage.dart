@@ -1,12 +1,40 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import 'package:card_swiper/card_swiper.dart';
 
 class DisplayImageWidget extends StatefulWidget {
   const DisplayImageWidget({super.key});
-
   @override
   State<DisplayImageWidget> createState() => _DisplayImageWidgetState();
+}
+
+Future<List<Map<String, dynamic>>> loadMedia(String collection) async {
+  List<Map<String, dynamic>> data = [];
+  if (collection == 'favorites') {
+    var allMoviesFavorites = FirebaseFirestore.instance
+        .collection('movies')
+        .where("favorite", isEqualTo: true);
+    var allSeriesFavorites = FirebaseFirestore.instance
+        .collection('series')
+        .where("favorite", isEqualTo: true);
+    var querySnapshotMovies = await allMoviesFavorites.get();
+    var querySnapshotSeries = await allSeriesFavorites.get();
+    for (var doc in querySnapshotMovies.docs) {
+      data.add(doc.data());
+    }
+    for (var doc in querySnapshotSeries.docs) {
+      data.add(doc.data());
+    }
+    return data;
+  } else {
+    var allCollection = FirebaseFirestore.instance.collection(collection);
+    var querySnapshot = await allCollection.get();
+    for (var doc in querySnapshot.docs) {
+      data.add(doc.data());
+    }
+    print("$data");
+    return data;
+  }
 }
 
 class _DisplayImageWidgetState extends State<DisplayImageWidget> {
@@ -48,7 +76,7 @@ class _DisplayImageWidgetState extends State<DisplayImageWidget> {
               Swiper(
                 itemBuilder: (BuildContext context, int index) {
                   return Image.network(
-                    "https://via.placeholder.com/350x150",
+                    "https://picsum.photos/512/1024",
                     fit: BoxFit.fill,
                   );
                 },
@@ -59,7 +87,7 @@ class _DisplayImageWidgetState extends State<DisplayImageWidget> {
               Swiper(
                 itemBuilder: (BuildContext context, int index) {
                   return Image.network(
-                    "https://via.placeholder.com/350x150",
+                    "https://picsum.photos/512/1024",
                     fit: BoxFit.fill,
                   );
                 },
