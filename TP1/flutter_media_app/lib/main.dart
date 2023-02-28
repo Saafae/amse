@@ -82,7 +82,6 @@ class MyAppState extends ChangeNotifier {
 
   void removeFavorite(String collection, int index) async {
     try {
-      print('$favoriteMoviesIds   delete');
       FirebaseFirestore.instance
           .collection(collection)
           .doc('$index')
@@ -131,14 +130,11 @@ Future<List<Map<String, dynamic>>> filterMedia(
     String media, String category) async {
   List<Map<String, dynamic>> data = [];
   if (media == 'All') {
-    print('Holaa $data');
-
     var snapshotMovies = await FirebaseFirestore.instance
         .collection('movies')
         .where('category', isEqualTo: category)
         .get();
     for (var doc in snapshotMovies.docs) {
-      print('$data');
       data.add(doc.data());
     }
     var snapshotSeries = await FirebaseFirestore.instance
@@ -146,7 +142,6 @@ Future<List<Map<String, dynamic>>> filterMedia(
         .where('category', isEqualTo: category)
         .get();
     for (var doc in snapshotSeries.docs) {
-      print('$data');
       data.add(doc.data());
     }
     return data;
@@ -196,11 +191,9 @@ class _MenuPageState extends State<MenuPage> {
     switch (_selectedIndex) {
       case 0:
         page = page.build;
-        print("$_selectedIndex ");
         break;
       case 1:
         page = page.build;
-        print("$_selectedIndex ");
         break;
       case 2:
         page = page.build;

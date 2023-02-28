@@ -77,8 +77,6 @@ class FavoritePage extends StatelessWidget {
                             flex: 0,
                             child: IconButton(
                               onPressed: () {
-                                print(
-                                    "$index ${appState.favoriteMoviesIds.length}");
                                 if (index >=
                                     appState.favoriteMoviesIds.length) {
                                   appState.removeFavorite(

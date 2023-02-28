@@ -80,12 +80,9 @@ class _HomePage extends State<HomePage> {
                                               onPressed: () {
                                                 if (!appState.favoriteMoviesIds
                                                     .contains(index)) {
-                                                  print(
-                                                      '${appState.favoriteMoviesIds} $index');
                                                   appState.addFavorite(
                                                       'movies', index);
                                                 } else {
-                                                  print("hello");
                                                   appState.removeFavorite(
                                                       'movies', index);
                                                 }
