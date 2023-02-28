@@ -1,115 +1,161 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'main.dart';
 
-class FilterPage extends StatelessWidget {
+class FilterPage extends StatefulWidget {
   const FilterPage({super.key});
+
+  @override
+  State<FilterPage> createState() => _FilterPage();
+}
+
+class _FilterPage extends State<FilterPage> {
+  String selectedFilter = 'All';
+  String selectedCategory = 'Action';
+
+  final filterOptions = ['All', 'movies', 'series'];
+  final categoryOptions = [
+    'Action',
+    'Comedy',
+    'Drama',
+    'Thriller',
+    'Science fiction',
+    'Fantasy'
+  ];
+
+  void handleFilterSelect(String filter) {
+    setState(() {
+      selectedFilter = filter;
+    });
+  }
+
+  void handleCategorySelect(String category) {
+    setState(() {
+      selectedCategory = category;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: loadMedia('favorites'),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          var data = snapshot.data;
-          if (appState.favoriteMoviesIds.isEmpty &&
-              appState.favoriteSeriesIds.isEmpty) {
-            return const Center(
-              child: Text('No favorites yet.'),
-            );
-          }
-          return ListView.builder(
-              itemCount: data?.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    Container(
+    return Column(
+      children: [
+        Row(
+          children: filterOptions
+              .map((option) => GestureDetector(
+                    onTap: () => handleFilterSelect(option),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                        color: option == selectedFilter
+                            ? const Color.fromARGB(172, 245, 150, 150)
+                            : Colors.transparent,
+                      ),
                       padding: const EdgeInsets.symmetric(
-                          vertical: 3.0), // add spacing between rows
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: SizedBox(
-                              height: 200,
-                              width: 100,
-                              child: Image.asset(
-                                "assets/${data![index]['name']}.jpg",
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8.0),
-                          Expanded(
-                            flex: 2,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  data[index]['name'],
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 8.0),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      color: const Color.fromARGB(
-                                          173, 203, 47, 12)),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Text(
-                                    '${data[index]['category']}',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                                const SizedBox(height: 8.0),
-                                Text(data[index]['description'],
-                                    textAlign: TextAlign.justify),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 0,
-                            child: IconButton(
-                              onPressed: () {
-                                print(
-                                    "$index ${appState.favoriteMoviesIds.length}");
-                                if (index >=
-                                    appState.favoriteMoviesIds.length) {
-                                  appState.removeFavorite(
-                                      'series',
-                                      appState.favoriteSeriesIds[index -
-                                          appState.favoriteMoviesIds.length]);
-                                } else {
-                                  appState.removeFavorite('movies',
-                                      appState.favoriteMoviesIds[index]);
-                                }
-                              },
-                              icon: const Icon(Icons.delete),
-                            ),
-                          ),
-                        ],
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
+                      child: Text(
+                        option,
+                        style: TextStyle(
+                          fontWeight: option == selectedFilter
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          color: option == selectedFilter
+                              ? const Color.fromARGB(255, 203, 47, 12)
+                              : const Color.fromARGB(255, 0, 0, 0),
+                        ),
                       ),
                     ),
-                    const Divider(),
-                  ],
-                );
-              });
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+                  ))
+              .toList(),
+        ),
+        const SizedBox(height: 16.0),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: categoryOptions
+                .map((option) => GestureDetector(
+                      onTap: () => handleCategorySelect(option),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20.0),
+                          color: option == selectedCategory
+                              ? const Color.fromARGB(172, 245, 150, 150)
+                              : Colors.transparent,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8.0,
+                        ),
+                        child: Text(
+                          option,
+                          style: TextStyle(
+                            fontWeight: option == selectedCategory
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: option == selectedCategory
+                                ? const Color.fromARGB(255, 203, 47, 12)
+                                : const Color.fromARGB(255, 0, 0, 0),
+                          ),
+                        ),
+                      ),
+                    ))
+                .toList(),
+          ),
+        ),
+        const SizedBox(height: 16.0),
+        Expanded(
+          child: SingleChildScrollView(
+            child: FutureBuilder<List<Map<String, dynamic>>>(
+              future: filterMedia(selectedFilter, selectedCategory),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<Map<String, dynamic>>? data = snapshot.data;
+                  return Column(
+                    children: [
+                      for (int i = 0; i < data!.length; i += 2)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                Image.asset(
+                                  "assets/${data[i]['name']}.jpg",
+                                  fit: BoxFit.contain,
+                                  height: 200,
+                                  width: 180,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(data[i]['name']),
+                                const SizedBox(height: 8.0),
+                              ],
+                            ),
+                            if (i + 1 < data.length)
+                              Column(
+                                children: [
+                                  Image.asset(
+                                    "assets/${data[i + 1]['name']}.jpg",
+                                    fit: BoxFit.contain,
+                                    height: 200,
+                                    width: 180,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(data[i + 1]['name']),
+                                ],
+                              ),
+                          ],
+                        ),
+                    ],
+                  );
+                } else {
+                  return const Center(
+                    child: Text("No media with category!"),
+                  );
+                }
+              },
+            ),
+          ),
+        )
+      ],
     );
   }
 }

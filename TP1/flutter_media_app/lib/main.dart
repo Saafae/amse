@@ -127,6 +127,41 @@ Future<List<Map<String, dynamic>>> loadMedia(String collection) async {
   }
 }
 
+Future<List<Map<String, dynamic>>> filterMedia(
+    String media, String category) async {
+  List<Map<String, dynamic>> data = [];
+  if (media == 'All') {
+    print('Holaa $data');
+
+    var snapshotMovies = await FirebaseFirestore.instance
+        .collection('movies')
+        .where('category', isEqualTo: category)
+        .get();
+    for (var doc in snapshotMovies.docs) {
+      print('$data');
+      data.add(doc.data());
+    }
+    var snapshotSeries = await FirebaseFirestore.instance
+        .collection('series')
+        .where('category', isEqualTo: category)
+        .get();
+    for (var doc in snapshotSeries.docs) {
+      print('$data');
+      data.add(doc.data());
+    }
+    return data;
+  } else {
+    var allCollection = FirebaseFirestore.instance
+        .collection(media)
+        .where('category', isEqualTo: category);
+    var querySnapshot = await allCollection.get();
+    for (var doc in querySnapshot.docs) {
+      data.add(doc.data());
+    }
+    return data;
+  }
+}
+
 class Page {
   final Widget? build;
   const Page({this.build});
