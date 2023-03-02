@@ -61,7 +61,7 @@ class PositionedTilesInGrid extends StatefulWidget {
 class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
   double _currentValue = 4;
   List<Widget> _tiles = [];
-  int _emptyTileIndex = 0;
+  int _emptyTileIndex = Random().nextInt(4 * 4);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,7 +114,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
           x = ((index % currentValue) / (currentValue - 1) * 2) - 1;
           y = ((index ~/ currentValue) / (currentValue - 1) * 2) - 1;
         }
-        return createTileWidgetFrom(Tile(alignment: Alignment(x, y)), index);
+        return createTile(Tile(alignment: Alignment(x, y)), index);
       },
     );
     return GridView.count(
@@ -127,7 +127,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
     );
   }
 
-  Widget createTileWidgetFrom(Tile tile, int index) {
+  Widget createTile(Tile tile, int index) {
     return InkWell(
       child: Container(
         child: tile.croppedImageTile(_currentValue, index, _emptyTileIndex),
@@ -146,42 +146,11 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
             adjacentIndex >= 0 &&
             adjacentIndex < _tiles.length) {
           setState(() {
-            _tiles[_emptyTileIndex] = _tiles[adjacentIndex];
-            _tiles[adjacentIndex] = createTileWidgetFrom(
-                Tile(alignment: const Alignment(0, 0)), _emptyTileIndex);
+            _tiles.insert(_emptyTileIndex, _tiles.removeAt(adjacentIndex));
             _emptyTileIndex = adjacentIndex;
           });
         }
       },
     );
   }
-
-  /* Widget createTileWidgetFrom(Tile tile, int index) {
-    return InkWell(
-      child: Container(
-          child: tile.croppedImageTile(_currentValue, index, _emptyTileIndex)),
-      onTap: () {
-        print("tapped on tile");
-        setState(() {
-          print("$index");
-          _tiles.insert(_emptyTileIndex, _tiles.removeAt(index));
-          print("${_tiles[index]}");
-        });
-      },
-    );
-  } */
-
-  /*  Widget createTileWidgetFrom(Tile tile, int index) {
-    return InkWell(
-      child: Container(child: tile.croppedImageTile(_currentValue, index)),
-      onTap: () {
-        print("tapped on tile");
-        setState(() {
-          print("$index");
-          _tiles.insert(5, _tiles.removeAt(index));
-          print("${_tiles[index]}");
-        });
-      },
-    );
-  } */
 }
