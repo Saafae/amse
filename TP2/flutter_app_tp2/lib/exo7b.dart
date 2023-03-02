@@ -24,7 +24,9 @@ class Tile {
           child: ColorFiltered(
             colorFilter:
                 const ColorFilter.mode(Colors.transparent, BlendMode.dst),
-            child: Image.asset(imagePath),
+            child: Image(
+              image: NetworkImage(imagePath),
+            ),
           ),
         ),
       ),
@@ -65,17 +67,11 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
   List<Widget> _tiles = [];
   int _emptyTileIndex = -1;
   bool _isStarted = false;
-  late String imagePath;
-  List<String> imagePaths = [
-    "./assets/image1.jpg",
-    "./assets/image2.jpg",
-    "./assets/image3.jpg",
-    "./assets/image4.jpg"
-  ];
+  late String imagePath = "https://picsum.photos/512";
+
   @override
   void initState() {
     super.initState();
-    imagePath = imagePaths[0];
     _tiles = createGridTiles(_currentValue.toInt(), _currentValue.toInt(),
         _emptyTileIndex, imagePath);
   }
@@ -92,47 +88,15 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              height: 50.0,
-              child: SizedBox(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: DropdownButton<String>(
-                    value: imagePath,
-                    items: imagePaths.map((path) {
-                      return DropdownMenuItem<String>(
-                        value: path,
-                        child: Text(path),
-                      );
-                    }).toList(),
-                    onChanged: (String? value) {
-                      if (value != null) {
-                        setState(() {
-                          imagePath = value;
-                          _tiles = createGridTiles(
-                            _currentValue.toInt(),
-                            _currentValue.toInt(),
-                            _emptyTileIndex,
-                            imagePath,
-                          );
-                        });
-                      }
-                    },
-                    iconSize: 24.0,
-                    icon: const Icon(Icons.arrow_drop_down),
-                    underline: const SizedBox(),
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.black87,
-                    ),
-                    isExpanded: true,
-                  ),
-                ),
-              ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => setState(() {
+                imagePath =
+                    'https://picsum.photos/512?random=${Random().nextInt(100)}';
+                _tiles = createGridTiles(_currentValue.toInt(),
+                    _currentValue.toInt(), _emptyTileIndex, imagePath);
+              }),
+              child: const Text('New Image'),
             ),
             Expanded(
               child: GridView.count(
@@ -151,8 +115,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
                     .toList(),
               ),
             ),
-            SizedBox(
-                height: 200, child: Image.asset(imagePath, fit: BoxFit.cover)),
+            SizedBox(height: 200, child: Image(image: NetworkImage(imagePath))),
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
