@@ -9,6 +9,7 @@ import 'exo5c.dart' as exo5c;
 import 'exo6a.dart' as exo6a;
 import 'exo6b.dart' as exo6b;
 import 'exo6c.dart' as exo6c;
+import 'exo7.dart' as exo7;
 
 void main() => runApp(const MyApp());
 
@@ -66,6 +67,10 @@ List exos = [
       title: 'Exercise 6 bis\'',
       subtitle: 'Move tiles in configurable grid',
       buildFunc: (context) => const exo6c.PositionedTilesInGrid()),
+  Exo(
+      title: 'Exercise 7',
+      subtitle: 'Taquin Game + change Image from Asset',
+      buildFunc: (context) => const exo7.PositionedTilesInGrid()),
 ];
 
 class MenuPage extends StatelessWidget {
