@@ -120,15 +120,16 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
                 width: 300,
                 child: Slider(
                   value: _currentValue,
-                  min: 1,
+                  min: 2,
                   max: 10,
-                  divisions: 9,
+                  divisions: 8,
                   onChanged: (double value) {
                     setState(() {
                       _currentValue = value;
                       _emptyTileIndex =
                           getEmptyTileIndex(_currentValue.toInt());
-                      print("$_emptyTileIndex");
+                      _tiles = createGridTiles(_currentValue.toInt(),
+                          _currentValue.toInt(), _emptyTileIndex);
                     });
                   },
                   label: '${_currentValue.toInt()}',
@@ -142,12 +143,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
   }
 
   void swipeTile(int index) {
-    if ((index + 1 == _emptyTileIndex &&
-            (index + 1) % _currentValue.toInt() != 1) ||
-        (index - 1 == _emptyTileIndex &&
-            (index) % _currentValue.toInt() != 1) ||
-        index + _currentValue.toInt() == _emptyTileIndex ||
-        index - _currentValue.toInt() == _emptyTileIndex) {
+    if (isAdjacent(index, _emptyTileIndex)) {
       setState(() {
         Widget tappedTile = _tiles[index];
         _tiles[index] = _tiles[_emptyTileIndex];
@@ -155,5 +151,13 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
         _emptyTileIndex = index;
       });
     }
+  }
+
+  bool isAdjacent(int index1, int index2) {
+    int columnCount = _currentValue.toInt();
+    return (index1 % columnCount == index2 % columnCount &&
+            (index1 - index2).abs() == columnCount) ||
+        (index1 ~/ columnCount == index2 ~/ columnCount &&
+            (index1 - index2).abs() == 1);
   }
 }
