@@ -61,6 +61,7 @@ class PositionedTilesInGrid extends StatefulWidget {
 }
 
 class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
+  int _compteur = 0;
   double _currentValue = 4;
   List<Widget> _tiles = [];
   int _emptyTileIndex = -1;
@@ -134,6 +135,17 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+            Text(
+              'Moves: $_compteur',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey[900],
+                letterSpacing: 1.2,
+                fontFamily: 'Roboto',
+              ),
+            ),
             Expanded(
               child: GridView.count(
                 primary: false,
@@ -204,6 +216,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
                                 _currentValue.toInt(),
                                 _emptyTileIndex,
                                 imagePath);
+                            _compteur = 0;
                           }
                           _isStarted = !_isStarted;
                         }),
@@ -249,15 +262,6 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
     );
   }
 
-  void updateEmptyTileIndex() {
-    for (int i = 0; i < _tiles.length; i++) {
-      if (_tiles[i] == _tiles[_emptyTileIndex]) {
-        _emptyTileIndex = i;
-        break;
-      }
-    }
-  }
-
   void swipeTile(int index) {
     if (isAdjacent(index, _emptyTileIndex)) {
       setState(() {
@@ -265,6 +269,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
         _tiles[index] = _tiles[_emptyTileIndex];
         _tiles[_emptyTileIndex] = tappedTile;
         _emptyTileIndex = index;
+        _compteur++;
       });
     }
   }
