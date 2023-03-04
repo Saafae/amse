@@ -12,6 +12,7 @@ import 'exo6c.dart' as exo6c;
 import 'exo7.dart' as exo7;
 import 'exo7b.dart' as exo7b;
 import 'exo7c.dart' as exo7c;
+import 'exo7d.dart' as exo7d;
 
 void main() => runApp(const MyApp());
 
@@ -79,8 +80,13 @@ List exos = [
       buildFunc: (context) => const exo7b.PositionedTilesInGrid()),
   Exo(
       title: 'Exercise 7 bis\'',
-      subtitle: 'Taquin Game + change Image from Camera',
+      subtitle:
+          'Taquin Game + change Image from Camera/Gallery image_picker for android',
       buildFunc: (context) => const exo7c.PositionedTilesInGrid()),
+  Exo(
+      title: 'Exercise 7 bis\'',
+      subtitle: 'Taquin Game + change Image from desktop image_picker for web',
+      buildFunc: (context) => const exo7d.PositionedTilesInGrid()),
 ];
 
 class MenuPage extends StatelessWidget {
@@ -98,15 +104,50 @@ class MenuPage extends StatelessWidget {
               var exo = exos[index];
               return Card(
                   child: ListTile(
-                      title: Text(exo.title),
-                      subtitle: Text(exo.subtitle),
-                      trailing: const Icon(Icons.play_arrow_rounded),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: exo.buildFunc),
+                title: Text(exo.title),
+                subtitle: Text(exo.subtitle),
+                trailing: const Icon(Icons.play_arrow_rounded),
+                onTap: () async {
+                  if (index == 11) {
+                    var result = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Hello'),
+                          content: const Text(
+                              'If you are using Google Chrome to access this exercise, we\'re sorry but it won\'t work because it uses a Flutter plugin for iOS and Android. Please try using an Android emulator instead. Thanks!'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('OK'),
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                            ),
+                          ],
                         );
-                      }));
+                      },
+                    );
+                    if (result == true) {
+                      // ignore: use_build_context_synchronously
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: exo.buildFunc),
+                      );
+                    }
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: exo.buildFunc),
+                    );
+                  }
+                },
+              ));
             }));
   }
 }

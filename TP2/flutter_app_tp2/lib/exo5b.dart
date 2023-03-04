@@ -13,7 +13,7 @@ class Tile {
           alignment: alignment!,
           widthFactor: 0.3,
           heightFactor: 0.3,
-          child: Image.asset('./assets/image.jpg'),
+          child: Image.asset('./assets/image1.jpg'),
         ),
       ),
     );

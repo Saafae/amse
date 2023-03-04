@@ -22,7 +22,7 @@ class Tile {
 }
 
 Tile tile =
-    Tile(imageURL: './assets/image.jpg', alignment: const Alignment(0, 0));
+    Tile(imageURL: './assets/image1.jpg', alignment: const Alignment(0, 0));
 
 class DisplayTileWidget extends StatelessWidget {
   const DisplayTileWidget({super.key});
@@ -44,7 +44,7 @@ class DisplayTileWidget extends StatelessWidget {
                 child: createTileWidgetFrom(tile))),
         SizedBox(
             height: 200,
-            child: Image.asset('./assets/image.jpg', fit: BoxFit.cover))
+            child: Image.asset('./assets/image1.jpg', fit: BoxFit.cover))
       ])),
     );
   }

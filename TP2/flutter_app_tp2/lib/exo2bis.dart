@@ -36,7 +36,7 @@ class _DisplayImageWidgetState extends State<DisplayImageWidget> {
                 ..rotateY(isChecked ? -pi : 0)
                 ..scale(_currentScaleValue),
               child: Image.asset(
-                './assets/image.jpg',
+                './assets/image1.jpg',
               ),
             ),
           ),
