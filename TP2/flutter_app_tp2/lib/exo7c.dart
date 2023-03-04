@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:image_picker/image_picker.dart';
 
 int getEmptyTileIndex(int currentValue) {
   return Random().nextInt(currentValue * currentValue);
@@ -10,27 +13,44 @@ class Tile {
   Tile({this.alignment});
 
   Widget croppedImageTile(
-      double currentValue, int index, int emptyTileIndex, String imagePath) {
+      double currentValue, int index, int emptyTileIndex, File imageFile) {
     if (index == emptyTileIndex) {
       return Container(color: Colors.transparent);
     }
-    return FittedBox(
-      fit: BoxFit.fill,
-      child: ClipRect(
-        child: Align(
-          alignment: alignment!,
-          widthFactor: 1 / currentValue,
-          heightFactor: 1 / currentValue,
-          child: ColorFiltered(
-            colorFilter:
-                const ColorFilter.mode(Colors.transparent, BlendMode.dst),
-            child: Image(
-              image: NetworkImage(imagePath),
+    if (imageFile.existsSync() && imageFile.lengthSync() > 0) {
+      return FittedBox(
+        fit: BoxFit.fill,
+        child: ClipRect(
+          child: Align(
+            alignment: alignment!,
+            widthFactor: 1 / currentValue,
+            heightFactor: 1 / currentValue,
+            child: ColorFiltered(
+              colorFilter:
+                  const ColorFilter.mode(Colors.transparent, BlendMode.dst),
+              child: Image.file(imageFile),
             ),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      return FittedBox(
+        fit: BoxFit.fill,
+        child: ClipRect(
+          child: Align(
+            alignment: alignment!,
+            widthFactor: 1 / currentValue,
+            heightFactor: 1 / currentValue,
+            child: const ColorFiltered(
+              colorFilter: ColorFilter.mode(Colors.transparent, BlendMode.dst),
+              child: Image(
+                image: NetworkImage("https://picsum.photos/512"),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
 
@@ -38,7 +58,7 @@ List<Widget> createGridTiles(
   int size,
   int columns,
   int emptyIndex,
-  String imagePath,
+  File imageFile,
 ) {
   final tiles = <Widget>[];
   for (int i = 0; i < size * size; i++) {
@@ -50,7 +70,7 @@ List<Widget> createGridTiles(
     }
     final alignment = Alignment(x, y);
     tiles.add(Tile(alignment: alignment)
-        .croppedImageTile(size.toDouble(), i, emptyIndex, imagePath));
+        .croppedImageTile(size.toDouble(), i, emptyIndex, imageFile));
   }
   return tiles;
 }
@@ -68,13 +88,70 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
   List<Widget> _tiles = [];
   int _emptyTileIndex = -1;
   bool _isStarted = false;
-  late String imagePath = "https://picsum.photos/512";
+  late File imageFile = File("../assets/image1.jpg");
+
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
     _tiles = createGridTiles(_currentValue.toInt(), _currentValue.toInt(),
-        _emptyTileIndex, imagePath);
+        _emptyTileIndex, imageFile);
+  }
+
+  Future<void> pickImage() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Select from gallery'),
+                onTap: () async {
+                  final pickedFile =
+                      await _picker.pickImage(source: ImageSource.gallery);
+                  if (pickedFile != null) {
+                    setState(() {
+                      imageFile = File(pickedFile.path);
+                      _tiles = createGridTiles(
+                        _currentValue.toInt(),
+                        _currentValue.toInt(),
+                        _emptyTileIndex,
+                        imageFile,
+                      );
+                    });
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take a picture'),
+                onTap: () async {
+                  final pickedFile =
+                      await _picker.pickImage(source: ImageSource.camera);
+                  if (pickedFile != null) {
+                    setState(() {
+                      imageFile = File(pickedFile.path);
+                      _tiles = createGridTiles(
+                        _currentValue.toInt(),
+                        _currentValue.toInt(),
+                        _emptyTileIndex,
+                        imageFile,
+                      );
+                    });
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -91,13 +168,8 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
           children: [
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => setState(() {
-                imagePath =
-                    'https://picsum.photos/512?random=${Random().nextInt(100)}';
-                _tiles = createGridTiles(_currentValue.toInt(),
-                    _currentValue.toInt(), _emptyTileIndex, imagePath);
-              }),
-              child: const Text('New Image'),
+              onPressed: pickImage,
+              child: const Text('Choose Image from Gallery or take a picture'),
             ),
             const SizedBox(height: 20),
             Text(
@@ -128,8 +200,6 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
               ),
             ),
             const SizedBox(height: 20),
-            SizedBox(height: 200, child: Image(image: NetworkImage(imagePath))),
-            const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               decoration: BoxDecoration(
@@ -148,7 +218,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
                                       _currentValue.toInt(),
                                       _currentValue.toInt(),
                                       _emptyTileIndex,
-                                      imagePath);
+                                      imageFile);
                                 })
                             : null),
                     style: ElevatedButton.styleFrom(
@@ -172,14 +242,14 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
                                 _currentValue.toInt(),
                                 _currentValue.toInt(),
                                 _emptyTileIndex,
-                                imagePath);
+                                imageFile);
                             shuffleTiles();
                           } else {
                             _tiles = createGridTiles(
                                 _currentValue.toInt(),
                                 _currentValue.toInt(),
                                 _emptyTileIndex,
-                                imagePath);
+                                imageFile);
                             _compteur = 0;
                           }
                           _isStarted = !_isStarted;
@@ -205,7 +275,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
                                       _currentValue.toInt(),
                                       _currentValue.toInt(),
                                       _emptyTileIndex,
-                                      imagePath);
+                                      imageFile);
                                 })
                             : null),
                     style: ElevatedButton.styleFrom(
