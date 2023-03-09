@@ -90,7 +90,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Moving Tiles in Grid'),
-        centerTitle: true,
+        backgroundColor: const Color.fromARGB(159, 77, 182, 172),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

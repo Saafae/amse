@@ -8,7 +8,7 @@ class DisplayGridWidget extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Grid colored'),
-          centerTitle: true,
+          backgroundColor: const Color.fromARGB(159, 77, 182, 172),
         ),
         body: GridView.count(
           primary: false,

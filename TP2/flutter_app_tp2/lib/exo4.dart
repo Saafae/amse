@@ -32,7 +32,7 @@ class DisplayTileWidget extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Display a Tile as a Cropped Image'),
-        centerTitle: true,
+        backgroundColor: const Color.fromARGB(159, 77, 182, 172),
       ),
       body: Center(
           child: Column(children: [

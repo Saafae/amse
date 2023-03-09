@@ -58,7 +58,7 @@ class PositionedTilesState extends State<PositionedTiles> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Moving Tiles'),
-        centerTitle: true,
+        backgroundColor: const Color.fromARGB(159, 77, 182, 172),
       ),
       body: Row(children: tiles),
       floatingActionButton: FloatingActionButton(

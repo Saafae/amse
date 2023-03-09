@@ -80,13 +80,13 @@ List exos = [
       buildFunc: (context) => const exo7b.PositionedTilesInGrid()),
   Exo(
       title: 'Exercise 7 bis\'',
+      subtitle: 'Taquin Game + change Image from desktop image_picker for web',
+      buildFunc: (context) => const exo7d.PositionedTilesInGrid()),
+  Exo(
+      title: 'Exercise 7 bis\'',
       subtitle:
           'Taquin Game + change Image from Camera/Gallery image_picker for android',
       buildFunc: (context) => const exo7c.PositionedTilesInGrid()),
-  Exo(
-      title: 'Exercise 7 bis\'',
-      subtitle: 'Taquin Game + change Image from desktop image_picker for web',
-      buildFunc: (context) => const exo7d.PositionedTilesInGrid()),
 ];
 
 class MenuPage extends StatelessWidget {
@@ -97,6 +97,7 @@ class MenuPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text('TP2'),
+          backgroundColor: const Color.fromARGB(159, 77, 182, 172),
         ),
         body: ListView.builder(
             itemCount: exos.length,

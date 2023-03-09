@@ -73,12 +73,120 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
     "./assets/image3.jpg",
     "./assets/image4.jpg"
   ];
+
+  final List<Map<String, int>> _previousMoves = [];
+  int lastMovedTileIndex = -1;
+  bool _canCancel = false;
+
   @override
   void initState() {
     super.initState();
     imagePath = imagePaths[0];
     _tiles = createGridTiles(_currentValue.toInt(), _currentValue.toInt(),
         _emptyTileIndex, imagePath);
+  }
+
+  bool isAdjacent(int index1, int index2) {
+    int columnCount = _currentValue.toInt();
+    return (index1 % columnCount == index2 % columnCount &&
+            (index1 - index2).abs() == columnCount) ||
+        (index1 ~/ columnCount == index2 ~/ columnCount &&
+            (index1 - index2).abs() == 1);
+  }
+
+  void swipeTile(int index) {
+    if (isAdjacent(index, _emptyTileIndex)) {
+      setState(() {
+        Widget tappedTile = _tiles[index];
+        _tiles[index] = _tiles[_emptyTileIndex];
+        _tiles[_emptyTileIndex] = tappedTile;
+        _previousMoves.add({
+          'empty': _emptyTileIndex,
+          'moved': index,
+        });
+        lastMovedTileIndex = index;
+        _emptyTileIndex = index;
+        _compteur++;
+
+        if (checkWin()) {
+          showWinDialog();
+        }
+        _canCancel = true;
+      });
+    }
+  }
+
+  void cancelSwipe() {
+    if (_previousMoves.isNotEmpty) {
+      Map<String, int> previousMove = _previousMoves.removeLast();
+      int emptyIndex = previousMove['empty']!;
+      int movedIndex = previousMove['moved']!;
+      setState(() {
+        Widget tappedTile = _tiles[movedIndex];
+        _tiles[movedIndex] = _tiles[emptyIndex];
+        _tiles[emptyIndex] = tappedTile;
+        lastMovedTileIndex = movedIndex;
+        _emptyTileIndex = emptyIndex;
+        _compteur--;
+        if (_previousMoves.isEmpty) {
+          _canCancel = false;
+        }
+      });
+    }
+  }
+
+  bool checkWin() {
+    for (int i = 0; i < _tiles.length; i++) {
+      if (_tiles[i].key != ValueKey(i)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void showWinDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Congratulations!'),
+        content: Text('You solved the puzzle in $_compteur moves.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _emptyTileIndex = getEmptyTileIndex(_currentValue.toInt());
+                _tiles = createGridTiles(_currentValue.toInt(),
+                    _currentValue.toInt(), _emptyTileIndex, imagePath);
+                shuffleTiles();
+                Navigator.pop(context);
+              });
+            },
+            child: const Text('Play again'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void shuffleTiles() {
+    int n = _tiles.length;
+    int emptyTileIndex = _tiles.indexOf(_tiles[_emptyTileIndex]);
+    List<Widget> shuffledTiles = List.from(_tiles);
+    for (int i = n - 1; i > 0; i--) {
+      int j = Random().nextInt(i + 1);
+      Widget temp = shuffledTiles[i];
+      shuffledTiles[i] = shuffledTiles[j];
+      shuffledTiles[j] = temp;
+
+      if (j == emptyTileIndex) {
+        emptyTileIndex = i;
+      } else if (i == emptyTileIndex) {
+        emptyTileIndex = j;
+      }
+    }
+    _emptyTileIndex = emptyTileIndex;
+    _tiles = shuffledTiles;
+    _compteur = 0;
   }
 
   @override
@@ -136,15 +244,31 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
               ),
             ),
             const SizedBox(height: 20),
-            Text(
-              'Moves: $_compteur',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueGrey[900],
-                letterSpacing: 1.2,
-                fontFamily: 'Roboto',
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  'Moves: $_compteur',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueGrey[900],
+                    letterSpacing: 1.2,
+                    fontFamily: 'Roboto',
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: _canCancel ? cancelSwipe : null,
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    backgroundColor: const Color.fromARGB(159, 77, 182, 172),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: const Icon(Icons.undo),
+                ),
+              ],
             ),
             Expanded(
               child: GridView.count(
@@ -260,42 +384,5 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
         ),
       ),
     );
-  }
-
-  void swipeTile(int index) {
-    if (isAdjacent(index, _emptyTileIndex)) {
-      setState(() {
-        Widget tappedTile = _tiles[index];
-        _tiles[index] = _tiles[_emptyTileIndex];
-        _tiles[_emptyTileIndex] = tappedTile;
-        _emptyTileIndex = index;
-        _compteur++;
-      });
-    }
-  }
-
-  bool isAdjacent(int index1, int index2) {
-    int columnCount = _currentValue.toInt();
-    return (index1 % columnCount == index2 % columnCount &&
-            (index1 - index2).abs() == columnCount) ||
-        (index1 ~/ columnCount == index2 ~/ columnCount &&
-            (index1 - index2).abs() == 1);
-  }
-
-  void shuffleTiles() {
-    int n = _tiles.length;
-    int emptyTileIndex = _tiles.indexOf(_tiles[_emptyTileIndex]);
-    for (int i = n - 1; i > 0; i--) {
-      int j = Random().nextInt(i + 1);
-      Widget temp = _tiles[i];
-      _tiles[i] = _tiles[j];
-      _tiles[j] = temp;
-      if (j == emptyTileIndex) {
-        emptyTileIndex = i;
-      } else if (i == emptyTileIndex) {
-        emptyTileIndex = j;
-      }
-    }
-    _emptyTileIndex = emptyTileIndex;
   }
 }

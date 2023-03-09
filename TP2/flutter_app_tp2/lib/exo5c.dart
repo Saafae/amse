@@ -35,7 +35,7 @@ class _DisplayGridWidgetState extends State<DisplayGridWidget> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Configure grid'),
-        centerTitle: true,
+        backgroundColor: const Color.fromARGB(159, 77, 182, 172),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

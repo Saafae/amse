@@ -21,6 +21,7 @@ class _DisplayImageWidgetState extends State<DisplayImageWidget> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Exo 2 : Transformer une image'),
+        backgroundColor: const Color.fromARGB(159, 77, 182, 172),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
