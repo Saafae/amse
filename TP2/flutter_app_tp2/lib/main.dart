@@ -109,7 +109,7 @@ class MenuPage extends StatelessWidget {
                 subtitle: Text(exo.subtitle),
                 trailing: const Icon(Icons.play_arrow_rounded),
                 onTap: () async {
-                  if (index == 11) {
+                  if (index == 12) {
                     var result = await showDialog(
                       context: context,
                       builder: (BuildContext context) {

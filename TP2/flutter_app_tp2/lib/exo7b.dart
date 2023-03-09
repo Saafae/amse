@@ -189,7 +189,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Taquin Game'),
-        centerTitle: true,
+        backgroundColor: const Color.fromARGB(159, 77, 182, 172),
       ),
       body: Container(
         color: const Color.fromARGB(76, 77, 182, 172),
