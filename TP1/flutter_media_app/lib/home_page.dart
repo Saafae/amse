@@ -88,8 +88,11 @@ class _HomePage extends State<HomePage> {
                                                 }
                                               },
                                               child: Icon(
-                                                movies[index]['favorite']
-                                                    ? Icons.favorite
+                                                movies[index]['favorite'] !=
+                                                        null
+                                                    ? movies[index]['favorite']
+                                                        ? Icons.favorite
+                                                        : Icons.favorite_border
                                                     : Icons.favorite_border,
                                                 color: Colors.red,
                                               ),
@@ -218,8 +221,11 @@ class _HomePage extends State<HomePage> {
                                                 }
                                               },
                                               child: Icon(
-                                                series[index]['favorite']
-                                                    ? Icons.favorite
+                                                series[index]['favorite'] !=
+                                                        null
+                                                    ? series[index]['favorite']
+                                                        ? Icons.favorite
+                                                        : Icons.favorite_border
                                                     : Icons.favorite_border,
                                                 color: Colors.red,
                                               ),
@@ -236,7 +242,7 @@ class _HomePage extends State<HomePage> {
                                         children: <Widget>[
                                           const SizedBox(width: 8.0),
                                           Text(
-                                            series[index]['name'],
+                                            series[index]['name'] ?? '',
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 20.0,
@@ -245,7 +251,7 @@ class _HomePage extends State<HomePage> {
                                           Row(
                                             children: [
                                               Text(
-                                                  'Director: ${series[index]['director']}'),
+                                                  'Director: ${series[index]['director'] ?? ''}'),
                                               const SizedBox(width: 3.0),
                                               Container(
                                                 width: 1.0,
@@ -261,7 +267,7 @@ class _HomePage extends State<HomePage> {
                                               ),
                                               const SizedBox(width: 3.0),
                                               Text(
-                                                  '${series[index]['rating']}'),
+                                                  '${series[index]['rating'] ?? ''}'),
                                             ],
                                           ),
                                           const SizedBox(height: 3.0),
@@ -275,7 +281,7 @@ class _HomePage extends State<HomePage> {
                                                 horizontal: 16.0,
                                                 vertical: 8.0),
                                             child: Text(
-                                              '${series[index]['category']}',
+                                              '${series[index]['category'] ?? ''}',
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.black),
@@ -283,7 +289,7 @@ class _HomePage extends State<HomePage> {
                                           ),
                                           const SizedBox(height: 8.0),
                                           Text(
-                                              '${series[index]['description']}',
+                                              '${series[index]['description'] ?? ''}',
                                               textAlign: TextAlign.justify),
                                           const SizedBox(height: 3.0),
                                         ],
