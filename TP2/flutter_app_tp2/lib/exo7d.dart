@@ -73,6 +73,8 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
   int lastMovedTileIndex = -1;
   bool _canCancel = false;
 
+  List<Map<String, int>> oldTileIndexes = [];
+
   @override
   void initState() {
     super.initState();
@@ -109,6 +111,15 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
         Widget tappedTile = _tiles[index];
         _tiles[index] = _tiles[_emptyTileIndex];
         _tiles[_emptyTileIndex] = tappedTile;
+
+        int? oldEmptyIndex = oldTileIndexes[_emptyTileIndex]['tileIndex'];
+        oldTileIndexes[_emptyTileIndex]['tileIndex'] = index;
+        oldTileIndexes[index]['tileIndex'] = oldEmptyIndex!;
+
+        var temp = oldTileIndexes[_emptyTileIndex];
+        oldTileIndexes[_emptyTileIndex] = oldTileIndexes[index];
+        oldTileIndexes[index] = temp;
+
         _previousMoves.add({
           'empty': _emptyTileIndex,
           'moved': index,
@@ -119,6 +130,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
 
         if (checkWin()) {
           showWinDialog();
+          oldTileIndexes = [];
         }
         _canCancel = true;
       });
@@ -146,7 +158,7 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
 
   bool checkWin() {
     for (int i = 0; i < _tiles.length; i++) {
-      if (_tiles[i].key != ValueKey(i)) {
+      if (oldTileIndexes[i]['tileIndex'] != oldTileIndexes[i]['oldIndex']) {
         return false;
       }
     }
@@ -157,8 +169,13 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Congratulations!'),
-        content: Text('You solved the puzzle in $_compteur moves.'),
+        title: const Text(
+          'Congratulations!',
+          style: TextStyle(color: Color.fromARGB(159, 77, 182, 172)),
+        ),
+        backgroundColor: Colors.white,
+        content: Text('You solved the puzzle in $_compteur moves.',
+            style: const TextStyle(color: Colors.black)),
         actions: [
           TextButton(
             onPressed: () {
@@ -170,7 +187,8 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
                 Navigator.pop(context);
               });
             },
-            child: const Text('Play again'),
+            child: const Text('Play again',
+                style: TextStyle(color: Color.fromARGB(159, 77, 182, 172))),
           ),
         ],
       ),
@@ -193,6 +211,12 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
         emptyTileIndex = j;
       }
     }
+
+    for (int i = 0; i < _tiles.length; i++) {
+      int oldIndex = _tiles.indexOf(shuffledTiles[i]);
+      oldTileIndexes.add({"tileIndex": i, "oldIndex": oldIndex});
+    }
+
     _emptyTileIndex = emptyTileIndex;
     _tiles = shuffledTiles;
     _compteur = 0;
