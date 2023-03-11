@@ -236,7 +236,10 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
           children: [
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: pickImage,
+              onPressed: () => {
+                pickImage(),
+                if (_isStarted) {_isStarted = !_isStarted}
+              },
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.black,
                 backgroundColor: const Color.fromARGB(159, 77, 182, 172),

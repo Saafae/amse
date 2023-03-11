@@ -227,6 +227,9 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
                     'https://picsum.photos/512?random=${Random().nextInt(100)}';
                 _tiles = createGridTiles(_currentValue.toInt(),
                     _currentValue.toInt(), _emptyTileIndex, imagePath);
+                if (_isStarted) {
+                  _isStarted = !_isStarted;
+                }
               }),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.black,

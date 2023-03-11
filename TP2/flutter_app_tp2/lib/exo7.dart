@@ -252,6 +252,9 @@ class _PositionedTilesInGridState extends State<PositionedTilesInGrid> {
                             _emptyTileIndex,
                             imagePath,
                           );
+                          if (_isStarted) {
+                            _isStarted = !_isStarted;
+                          }
                         });
                       }
                     },
